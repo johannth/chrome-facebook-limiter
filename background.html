@@ -1,0 +1,87 @@
+<html>
+<head>
+<script>
+
+    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) 
+    {
+        if (request.method == "getRemainingSeconds")
+        {
+            sendResponse({"remainingSeconds": getRemainingSeconds()});
+        }
+        else if(request.method == "openTab")
+        {
+            markVisit();
+            sendResponse({}); 
+        }
+        else if(request.method == "closeTab")
+        {
+            tabWasClosed();
+            sendResponse({});
+        }
+    });
+    
+    var CHECK_INTERVAL = 1,
+    MAX_ALLOWED_SECONDS_PER_DAY = 60 * 20;
+    
+    function getNumberOfOpenTabs()
+    {
+        return parseInt(localStorage["numberOfOpenTabs"], 10);
+    }
+    
+    function setNumberOfOpenTabs(numberOfOpenTabs)
+    {
+        localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
+    }
+    
+    function markVisit()
+    {
+        setNumberOfOpenTabs(getNumberOfOpenTabs() + 1);
+        var currentTime = new Date();
+        localStorage["yearOfLastVisit"] = currentTime.getFullYear();
+        localStorage["monthOfLastVisit"] = currentTime.getMonth();
+        localStorage["dayOfLastVisit"] = currentTime.getDate();
+    }
+    
+    function tabWasClosed()
+    {
+        setNumberOfOpenTabs(getNumberOfOpenTabs() - 1);
+    }
+
+    function getRemainingSeconds()
+    {    
+        return parseInt(localStorage["secondsRemaining"], 10);
+    }
+
+    function setRemainingSeconds(seconds)
+    {
+        localStorage["secondsRemaining"] = seconds;
+    }
+    
+    function isFirstVisitOfTheDay()
+    {
+        var currentTime = new Date();
+        return localStorage["yearOfLastVisit"] !== "" + currentTime.getFullYear() &&
+                localStorage["monthOfLastVisit"] !== "" + currentTime.getMonth() &&
+                localStorage["dayOfLastVisit"] !== "" + currentTime.getDate();
+    }
+    
+    if(localStorage["numberOfOpenTabs"] == null)
+    {
+        localStorage["numberOfOpenTabs"] = 0;
+    }
+    
+    if(isFirstVisitOfTheDay())
+    {
+        setRemainingSeconds(MAX_ALLOWED_SECONDS_PER_DAY);
+    }
+
+    setInterval (function()
+    {
+        if(getNumberOfOpenTabs() > 0)
+        {
+            setRemainingSeconds(getRemainingSeconds() - CHECK_INTERVAL);
+        }
+    }, CHECK_INTERVAL * 1000);
+</script>
+</head>
+</html>
