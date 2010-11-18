@@ -1,27 +1,31 @@
 <html>
 <head>
 <script>
+    var CHECK_INTERVAL = 1,
+    MAX_ALLOWED_SECONDS_PER_DAY = 60 * 20,
+    MAX_ALLOWED_VISITS_PER_DAY = 10;
 
     chrome.extension.onRequest.addListener(function(request, sender, sendResponse) 
     {
-        if (request.method == "getRemainingSeconds")
+        if (request.method === "update")
         {
-            sendResponse({"remainingSeconds": getRemainingSeconds()});
+            sendResponse({
+                "remainingSeconds": getRemainingSeconds(),
+                "numberOfVisitsToday": getNumberOfVisitsToday(),
+                "maxVisits": MAX_ALLOWED_VISITS_PER_DAY
+            });
         }
-        else if(request.method == "openTab")
+        else if(request.method === "openTab")
         {
             markVisit();
             sendResponse({}); 
         }
-        else if(request.method == "closeTab")
+        else if(request.method === "closeTab")
         {
             tabWasClosed();
             sendResponse({});
         }
     });
-    
-    var CHECK_INTERVAL = 1,
-    MAX_ALLOWED_SECONDS_PER_DAY = 60 * 20;
     
     function getNumberOfOpenTabs()
     {
@@ -33,6 +37,16 @@
         localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
     }
     
+    function getNumberOfVisitsToday()
+    {
+        return parseInt(localStorage["numberOfVisitsToday"], 10);
+    }
+    
+    function setNumberOfVisitsToday(numberOfVisitsToday)
+    {
+        localStorage["numberOfVisitsToday"] = numberOfVisitsToday;
+    }
+    
     function markVisit()
     {
         setNumberOfOpenTabs(getNumberOfOpenTabs() + 1);
@@ -40,6 +54,7 @@
         localStorage["yearOfLastVisit"] = currentTime.getFullYear();
         localStorage["monthOfLastVisit"] = currentTime.getMonth();
         localStorage["dayOfLastVisit"] = currentTime.getDate();
+        setNumberOfVisitsToday(getNumberOfVisitsToday() + 1);
     }
     
     function tabWasClosed()
@@ -70,9 +85,15 @@
         localStorage["numberOfOpenTabs"] = 0;
     }
     
+    if(localStorage["numberOfVisitsToday"] == null)
+    {
+        localStorage["numberOfVisitsToday"] = 0;
+    }
+    
     if(isFirstVisitOfTheDay())
     {
         setRemainingSeconds(MAX_ALLOWED_SECONDS_PER_DAY);
+        setNumberOfVisitsToday(0);
     }
 
     setInterval (function()

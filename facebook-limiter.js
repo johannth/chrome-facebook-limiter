@@ -1,4 +1,4 @@
-function onOutOfTime()
+function noMoreFacebookToday()
 {
     $("body").html("<div id=\"no-more-facebook\">No more Facebook today! :(</div>");
 }
@@ -37,18 +37,24 @@ function updateCountdownTimer(remainingSeconds)
     $("#countdown-timer").html("Time remaining today: " + getFriendlyTimeFromSeconds(remainingSeconds));
 }
 
-$("body").prepend("<div id=\"countdown-timer\"></div>");
+function updateNumberOfVisits(numberOfVisits, maxVisits)
+{
+     $("#number-of-visits").html("Number of visits today: " + numberOfVisits + "/" + maxVisits);
+}
+
+$("body").prepend("<div id=\"limiter\"><div id=\"countdown-timer\"></div><div id=\"number-of-visits\"></div></div>");
 
 chrome.extension.sendRequest({method: "openTab"});
 
 setInterval (function()
 {
-    chrome.extension.sendRequest({method: "getRemainingSeconds"}, function(response) {
+    chrome.extension.sendRequest({method: "update"}, function(response) {
         updateCountdownTimer(response.remainingSeconds);
+        updateNumberOfVisits(response.numberOfVisitsToday, response.maxVisits);
     
-        if(response.remainingSeconds < 0)
+        if(response.remainingSeconds < 0 || response.numberOfVisitsToday >= response.maxVisits)
         {
-            onOutOfTime();
+            noMoreFacebookToday();
         }
     });
 }, 1000);
