@@ -1,9 +1,10 @@
 <html>
 <head>
+<script type="text/javascript" src="functions.js"></script>
 <script>
-    var CHECK_INTERVAL = 1,
-    MAX_ALLOWED_SECONDS_PER_DAY = 60 * 20,
-    MAX_ALLOWED_VISITS_PER_DAY = 10;
+    setInitialValuesOnFirstLaunch();
+  
+    var CHECK_INTERVAL = 1;
 
     chrome.extension.onRequest.addListener(function(request, sender, sendResponse) 
     {
@@ -12,7 +13,9 @@
             sendResponse({
                 "remainingSeconds": getRemainingSeconds(),
                 "numberOfVisitsToday": getNumberOfVisitsToday(),
-                "maxVisits": MAX_ALLOWED_VISITS_PER_DAY
+                "maxVisits": getMaxAllowedVisitsPerDay(),
+                "limitTime": localStorage["limitTime"] === "true",
+                "limitVisits": localStorage["limitVisits"] == "true"
             });
         }
         else if(request.method === "openTab")
@@ -27,49 +30,23 @@
         }
     });
     
-    function getNumberOfOpenTabs()
-    {
-        return parseInt(localStorage["numberOfOpenTabs"], 10);
-    }
-    
-    function setNumberOfOpenTabs(numberOfOpenTabs)
-    {
-        localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
-    }
-    
-    function getNumberOfVisitsToday()
-    {
-        return parseInt(localStorage["numberOfVisitsToday"], 10);
-    }
-    
-    function setNumberOfVisitsToday(numberOfVisitsToday)
-    {
-        localStorage["numberOfVisitsToday"] = numberOfVisitsToday;
-    }
-    
     function markVisit()
     {
+        if(getNumberOfOpenTabs() === 0)
+        {
+            setNumberOfVisitsToday(getNumberOfVisitsToday() + 1);
+        }
+        
         setNumberOfOpenTabs(getNumberOfOpenTabs() + 1);
         var currentTime = new Date();
         localStorage["yearOfLastVisit"] = currentTime.getFullYear();
         localStorage["monthOfLastVisit"] = currentTime.getMonth();
         localStorage["dayOfLastVisit"] = currentTime.getDate();
-        setNumberOfVisitsToday(getNumberOfVisitsToday() + 1);
     }
     
     function tabWasClosed()
     {
         setNumberOfOpenTabs(getNumberOfOpenTabs() - 1);
-    }
-
-    function getRemainingSeconds()
-    {    
-        return parseInt(localStorage["secondsRemaining"], 10);
-    }
-
-    function setRemainingSeconds(seconds)
-    {
-        localStorage["secondsRemaining"] = seconds;
     }
     
     function isFirstVisitOfTheDay()
@@ -79,21 +56,11 @@
                 localStorage["monthOfLastVisit"] !== "" + currentTime.getMonth() &&
                 localStorage["dayOfLastVisit"] !== "" + currentTime.getDate();
     }
-    
-    if(localStorage["numberOfOpenTabs"] == null)
-    {
-        localStorage["numberOfOpenTabs"] = 0;
-    }
-    
-    if(localStorage["numberOfVisitsToday"] == null)
-    {
-        localStorage["numberOfVisitsToday"] = 0;
-    }
-    
+
     if(isFirstVisitOfTheDay())
     {
-        setRemainingSeconds(MAX_ALLOWED_SECONDS_PER_DAY);
-        setNumberOfVisitsToday(0);
+        resetExtension();
+        setNumberOfOpenTabs(0);
     }
 
     setInterval (function()

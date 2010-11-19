@@ -1,9 +1,15 @@
 #limiter
 {
     background-color: #3B5998;
-    color: #fff;    text-align: right;
+    color: #fff;    
+    text-align: right;
     padding-top: 10px;
     padding-right: 20px;
+}
+
+#limiter .disabled
+{
+    text-decoration: line-through;
 }
 
 #countdown-timer
@@ -19,4 +25,61 @@
     padding-bottom:20px;
     text-align:center;
     font-size: 40px;
+}
+
+.container
+{
+    width: 981px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.options
+{
+    padding:0px;
+    margin:0px;
+    font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+}
+
+.options .heading
+{
+    background-color: #3B5998;
+    color: #fff; 
+    padding-left: 20px;
+    padding-top:10px;
+    padding-bottom: 10px;
+}
+
+.options .heading h1
+{
+    margin:0px;
+}
+
+.options form ul
+{
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.options form ul input
+{
+    margin-right: 10px;
+}
+
+.options .forms
+{
+    border-color:#B3B3B3;
+    border-width:1px;
+    border-style:solid;
+    border-top-style:none;
+    padding: 20px;
+}
+
+.options .copyright
+{
+    padding-top:10px;
+    padding-left:10px;
+    color:#808080;
+    font-size:11px;
 }

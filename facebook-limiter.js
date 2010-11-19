@@ -1,6 +1,6 @@
 function noMoreFacebookToday()
 {
-    $("body").html("<div id=\"no-more-facebook\">No more Facebook today! :(</div>");
+    $("body").html("<div id=\"no-more-facebook\">It's time to do something more productive! :)</div>");
 }
 
 function getFriendlyTimeFromSeconds(seconds)
@@ -34,23 +34,48 @@ function zeroPad(number)
 
 function updateCountdownTimer(remainingSeconds)
 {
-    $("#countdown-timer").html("Time remaining today: " + getFriendlyTimeFromSeconds(remainingSeconds));
+    $("#countdown-timer").removeClass("disabled").html("Time remaining today: " + getFriendlyTimeFromSeconds(remainingSeconds));
+}
+
+function disableTimeLimit()
+{
+    $("#countdown-timer").addClass("disabled");
 }
 
 function updateNumberOfVisits(numberOfVisits, maxVisits)
 {
-     $("#number-of-visits").html("Number of visits today: " + numberOfVisits + "/" + maxVisits);
+     $("#number-of-visits").removeClass("disabled").html("Number of visits today: " + numberOfVisits + "/" + maxVisits);
 }
 
-$("body").prepend("<div id=\"limiter\"><div id=\"countdown-timer\"></div><div id=\"number-of-visits\"></div></div>");
+function disableNumberOfVisits()
+{
+    $("#number-of-visits").addClass("disabled");
+}
+
+$("body").prepend("<div id=\"limiter\"><div class=\"container\"><div id=\"countdown-timer\">Loading timer...</div><div id=\"number-of-visits\">Loading number of visits...</div></div></div>");
 
 chrome.extension.sendRequest({method: "openTab"});
 
 setInterval (function()
 {
     chrome.extension.sendRequest({method: "update"}, function(response) {
-        updateCountdownTimer(response.remainingSeconds);
-        updateNumberOfVisits(response.numberOfVisitsToday, response.maxVisits);
+        if(response.limitTime)
+        {
+            updateCountdownTimer(response.remainingSeconds);
+        }
+        else
+        {
+            disableTimeLimit();
+        }
+        
+        if(response.limitVisits)
+        {
+            updateNumberOfVisits(response.numberOfVisitsToday, response.maxVisits);
+        }
+        else
+        {
+            disableNumberOfVisits();
+        }
     
         if(response.remainingSeconds < 0 || response.numberOfVisitsToday >= response.maxVisits)
         {
