@@ -1,11 +1,11 @@
 function setInitialValuesOnFirstLaunch()
 {
-    if(!localStorage["numberOfOpenTabs"])
+    if(localStorage["numberOfOpenTabs"] === null)
     {
         localStorage["numberOfOpenTabs"] = 0;
     }
     
-    if(!localStorage["numberOfVisitsToday"])
+    if(localStorage["numberOfVisitsToday"] === null)
     {
         localStorage["numberOfVisitsToday"] = 0;
     }
