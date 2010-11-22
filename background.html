@@ -1,75 +1,11 @@
 <html>
 <head>
-<script type="text/javascript" src="functions.js"></script>
+<script type="text/javascript" src="fl_database.js"></script>
+<script type="text/javascript" src="fl_background.js"></script>
 <script>
-    setInitialValuesOnFirstLaunch();
-  
-    var CHECK_INTERVAL = 1;
-
-    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) 
-    {
-        if (request.method === "update")
-        {
-            sendResponse({
-                "remainingSeconds": getRemainingSeconds(),
-                "numberOfVisitsToday": getNumberOfVisitsToday(),
-                "maxVisits": getMaxAllowedVisitsPerDay(),
-                "limitTime": localStorage["limitTime"] === "true",
-                "limitVisits": localStorage["limitVisits"] == "true"
-            });
-        }
-        else if(request.method === "openTab")
-        {
-            markVisit();
-            sendResponse({}); 
-        }
-        else if(request.method === "closeTab")
-        {
-            tabWasClosed();
-            sendResponse({});
-        }
-    });
-    
-    function markVisit()
-    {
-        if(getNumberOfOpenTabs() === 0)
-        {
-            setNumberOfVisitsToday(getNumberOfVisitsToday() + 1);
-        }
-        
-        setNumberOfOpenTabs(getNumberOfOpenTabs() + 1);
-        var currentTime = new Date();
-        localStorage["yearOfLastVisit"] = currentTime.getFullYear();
-        localStorage["monthOfLastVisit"] = currentTime.getMonth();
-        localStorage["dayOfLastVisit"] = currentTime.getDate();
-    }
-    
-    function tabWasClosed()
-    {
-        setNumberOfOpenTabs(getNumberOfOpenTabs() - 1);
-    }
-    
-    function isFirstVisitOfTheDay()
-    {
-        var currentTime = new Date();
-        return localStorage["yearOfLastVisit"] !== "" + currentTime.getFullYear() &&
-                localStorage["monthOfLastVisit"] !== "" + currentTime.getMonth() &&
-                localStorage["dayOfLastVisit"] !== "" + currentTime.getDate();
-    }
-
-    if(isFirstVisitOfTheDay())
-    {
-        resetExtension();
-        setNumberOfOpenTabs(0);
-    }
-
-    setInterval (function()
-    {
-        if(getNumberOfOpenTabs() > 0)
-        {
-            setRemainingSeconds(getRemainingSeconds() - CHECK_INTERVAL);
-        }
-    }, CHECK_INTERVAL * 1000);
+var backgroundWorker = new fl_Background(new fl_Database());
+backgroundWorker.addExtensionsListener();
+backgroundWorker.startTimer();
 </script>
 </head>
 </html>

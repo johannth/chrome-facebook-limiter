@@ -4,41 +4,42 @@
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <link rel="stylesheet" href="facebook-limiter.css" type="text/css" charset="utf-8">
         
-        
         <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
-        <script type="text/javascript" src="functions.js"></script>
+        <script type="text/javascript" src="fl_database.js"></script>
         <script type="text/javascript"> 
             
         $(function()
         {
-            $(".time-limit").attr('checked', localStorage["limitTime"] === "true");
-            $(".number-of-visits").attr('checked', localStorage["limitVisits"] === "true");
-            $(".max-visits").attr("value", getMaxAllowedVisitsPerDay());
-            $(".max-seconds").attr("value", getMaxAllowedSecondsPerDay());
+            var database = new fl_Database();
+            
+            $(".time-limit").attr('checked', database.shouldLimitTime());
+            $(".number-of-visits").attr('checked', database.shouldLimitVisits());
+            $(".max-visits").attr("value", database.getMaxAllowedVisitsPerDay());
+            $(".max-seconds").attr("value", database.getMaxAllowedSecondsPerDay());
 
             $(".time-limit").click(function(event)
             {
-                localStorage["limitTime"] = $(this).is(':checked');
+                database.setShouldLimitTime($(this).is(':checked'));
             });
             
             $(".number-of-visits").click(function(event)
             {
-                localStorage["limitVisits"] = $(this).is(':checked');
+                database.setShouldLimitVisits($(this).is(':checked'));
             });
             
             $(".reset").click(function(event)
             {
-                resetExtension();
+                database.resetExtension();
             });
             
             $(".max-visits").blur(function(event)
             {
-                setMaxAllowedVisitsPerDay($(this).val());
+                database.setMaxAllowedVisitsPerDay($(this).val());
             });
             
             $(".max-seconds").blur(function(event)
             {
-                setMaxAllowedSecondsPerDay($(this).val());
+                database.setMaxAllowedSecondsPerDay($(this).val());
             });
         });
         </script>

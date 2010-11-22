@@ -1,6 +1,6 @@
 {
   "name": "Facebook limiter",
-  "version": "1.1",
+  "version": "1.5",
   "description": "Spend a healthy amount of time on Facebook every day",
   "options_page": "options.html",
   "background_page": "background.html",
@@ -8,7 +8,8 @@
     {
       "matches": ["http://www.facebook.com/*"],
       "css": ["facebook-limiter.css"],
-      "js": ["jquery-1.4.4.min.js", "facebook-limiter.js"]
+      "js": ["jquery-1.4.4.min.js", "fl_content_script.js"],
+      "run_at": "document_end"
     }
   ]
 }
