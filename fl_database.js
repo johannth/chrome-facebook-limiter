@@ -128,10 +128,20 @@ fl_Database.prototype.shouldLimitTime = function()
     return localStorage["limitTime"] === "true";
 };
 
-fl_Database.prototype.isFirstVisitOfTheDay = function()
+fl_Database.prototype.isFirstVisitOfTheDay = function(currentDay)
 {
-    return this.getNumberOfVisitsToday() === 0;
+    return localStorage["yearOfLastVisit"] !== "" + currentDay.getFullYear() ||
+        localStorage["monthOfLastVisit"] !== "" + currentDay.getMonth() ||
+        localStorage["dateOfLastVisit"] !== "" + currentDay.getDate();
 };
+
+fl_Database.prototype.setLastVisit = function(dateOfLastVisit)
+{
+    localStorage["yearOfLastVisit"] = dateOfLastVisit.getFullYear();
+    localStorage["monthOfLastVisit"] = dateOfLastVisit.getMonth();
+    localStorage["dateOfLastVisit"] = dateOfLastVisit.getDate();
+};
+
 
 fl_Database.prototype.resetExtension = function()
 {

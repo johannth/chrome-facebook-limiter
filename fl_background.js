@@ -26,7 +26,7 @@ fl_Background.prototype.onRequest = function(msg, port)
     }
     else if(msg.method === "openTab")
     {
-        if(this.database.isFirstVisitOfTheDay())
+        if(this.database.isFirstVisitOfTheDay(new Date()))
         {
             this.database.resetExtension();
         }
@@ -73,6 +73,7 @@ fl_Background.prototype.markVisit = function()
         this.database.setNumberOfVisitsToday(this.database.getNumberOfVisitsToday() + 1);
     }
     
+    this.database.setLastVisit(new Date());
     this.database.setNumberOfOpenTabs(this.database.getNumberOfOpenTabs() + 1);
 };
 

@@ -1,3 +1,8 @@
+.fl
+{
+    font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+}
+
 #limiter
 {
     background-color: #3B5998;
@@ -17,57 +22,47 @@
     margin-bottom: 5px;
 }
 
-#no-more-facebook
-{
-    background-color: #3B5998;
-    color: #fff;
-    padding-top:20px;
-    padding-bottom:20px;
-    text-align:center;
-    font-size: 40px;
-}
-
-.container
+.fl_container
 {
     width: 981px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.options
+.fl_options
 {
     padding:0px;
     margin:0px;
-    font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
 }
 
-.options .heading
+.fl_heading
 {
     background-color: #3B5998;
-    color: #fff; 
     padding-left: 20px;
     padding-top:10px;
     padding-bottom: 10px;
 }
 
-.options .heading h1
+.fl_heading h1
 {
     margin:0px;
+    color: #fff!important; 
+    font-size: 32px!important;
 }
 
-.options form ul
+.fl_options form ul
 {
     list-style-type: none;
     margin: 0px;
     padding: 0px;
 }
 
-.options form ul input
+.fl_options form ul input
 {
     margin-right: 10px;
 }
 
-.options .forms
+.fl_box
 {
     border-color:#B3B3B3;
     border-width:1px;
@@ -76,7 +71,7 @@
     padding: 20px;
 }
 
-.options .copyright
+.fl_copyright
 {
     padding-top:10px;
     padding-left:10px;

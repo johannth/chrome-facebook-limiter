@@ -54,10 +54,29 @@
         test("Test isFirstVisitOfTheDay is true on first visit", function() {
             var database = new fl_Database();
             
-            equal(database.isFirstVisitOfTheDay(), true);
+            equal(database.isFirstVisitOfTheDay(new Date()), true);
             
             clearLocalStorage();
         });
+        
+        test("Test isFirstVisitOfTheDay is false on second visit during the same day", function() {
+            var database = new fl_Database();
+            database.setLastVisit(new Date());
+            
+            equal(database.isFirstVisitOfTheDay(new Date()), false);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test isFirstVisitOfTheDay is true on first visit during the next day", function() {
+            var database = new fl_Database();
+            database.setLastVisit(new Date(2010, 10, 1, 0, 0, 0, 0));
+            
+            equal(database.isFirstVisitOfTheDay(new Date(2010, 10, 2, 0, 0, 0, 0)), true);
+            
+            clearLocalStorage();
+        });
+        
         
         test("Test setNumberOfVisitsToday", function() {
             var database = new fl_Database();
