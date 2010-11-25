@@ -6,6 +6,7 @@ var fl_ContentScript = function()
     {
         instance.onResponse(msg);
     });
+    this.timer = null;
 };
 
 fl_ContentScript.prototype.noMoreFacebookToday = function()
@@ -110,6 +111,7 @@ fl_ContentScript.prototype.onResponse = function(response)
     if(response.remainingSeconds < 0 || response.numberOfVisitsToday > response.maxVisits)
     {
         this.noMoreFacebookToday();
+        clearInterval(this.timer);
     }
 };
 
@@ -117,7 +119,7 @@ fl_ContentScript.prototype.startTimer = function()
 {
     var instance = this;
     
-    setInterval (function()
+    this.timer = setInterval (function()
     {
         instance.port.postMessage({method: "update"});
     }, 1000);
