@@ -107,7 +107,7 @@ fl_ContentScript.prototype.onResponse = function(response)
         this.disableNumberOfVisits();
     }
 
-    if(response.remainingSeconds < 0 || response.numberOfVisitsToday >= response.maxVisits)
+    if(response.remainingSeconds < 0 || response.numberOfVisitsToday > response.maxVisits)
     {
         this.noMoreFacebookToday();
     }

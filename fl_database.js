@@ -142,7 +142,6 @@ fl_Database.prototype.setLastVisit = function(dateOfLastVisit)
     localStorage["dateOfLastVisit"] = dateOfLastVisit.getDate();
 };
 
-
 fl_Database.prototype.resetExtension = function()
 {
     this.setRemainingSeconds(this.getMaxAllowedSecondsPerDay());

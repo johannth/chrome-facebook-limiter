@@ -83,7 +83,10 @@
         });
         
         test("Test that backgroundWorker resets extension on first visit", function() {
-            var database = new fl_Database();        
+            var database = new fl_Database(); 
+            var currentDate = new Date();
+            
+            database.setLastVisit(new Date(currentDate.getFullYear() - 1, 1, 1, 0, 0, 0, 0));
             database.setNumberOfOpenTabs(0);
             database.setRemainingSeconds(database.getMaxAllowedSecondsPerDay() - 1);            
             var backgroundWorker = new fl_Background(database);
@@ -92,7 +95,10 @@
             var request = function() {};
             request.method = "openTab";
             
-            backgroundWorker.onRequest(request, null, function(response) { });
+            var mockPort = function() {};
+            mockPort.postMessage = function(msg) {};
+            
+            backgroundWorker.onRequest(request, mockPort);
             equal(database.getRemainingSeconds(), database.getMaxAllowedSecondsPerDay());
             equal(database.getNumberOfVisitsToday(), 1);
             equal(database.getNumberOfOpenTabs(), 1);
@@ -102,6 +108,7 @@
         
         test("Test that backgroundWorker doesn't reset the extension on second visit", function() {
             var database = new fl_Database(); 
+            database.setLastVisit(new Date());
             database.setNumberOfVisitsToday(1);
             database.setNumberOfOpenTabs(0);
             database.setRemainingSeconds(100);            
@@ -110,7 +117,10 @@
             var request = function() {};
             request.method = "openTab";
             
-            backgroundWorker.onRequest(request, null, function(response) { });
+            var mockPort = function() {};
+            mockPort.postMessage = function(msg) {};
+            
+            backgroundWorker.onRequest(request, mockPort);
             equal(database.getRemainingSeconds(), 100);
             equal(database.getNumberOfVisitsToday(), 2);
             equal(database.getNumberOfOpenTabs(), 1);

@@ -31,13 +31,10 @@ fl_Background.prototype.onRequest = function(msg, port)
             this.database.resetExtension();
         }
         this.markVisit();
-        
-        port.postMessage({}); 
     }
     else if(msg.method === "closeTab")
     {
         this.tabWasClosed();
-        port.postMessage({});
     }
 };
 
@@ -45,6 +42,7 @@ fl_Background.prototype.addExtensionsListener = function()
 {
     var instance = this,
     database = this.database;
+    
     chrome.extension.onConnect.addListener(function(port)
     {
         port.onMessage.addListener(function(msg)

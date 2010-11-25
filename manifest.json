@@ -1,6 +1,6 @@
 {
   "name": "Facebook limiter",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Spend a healthy amount of time on Facebook every day",
   "options_page": "options.html",
   "background_page": "background.html",
