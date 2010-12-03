@@ -1,8 +1,3 @@
-String.prototype.startsWith = function(str) 
-{
-    return (this.match("^"+str)==str)
-};
-
 var fl_Database = function()
 {
     if(localStorage["numberOfOpenTabs"] === undefined)
@@ -45,7 +40,10 @@ fl_Database.prototype.getNumberOfOpenTabs = function()
 
 fl_Database.prototype.setNumberOfOpenTabs = function(numberOfOpenTabs)
 {
-    localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
+    if(numberOfOpenTabs >= 0)
+    {
+        localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
+    }
 };
 
 fl_Database.prototype.initNumberOfOpenTabs = function()
@@ -146,4 +144,5 @@ fl_Database.prototype.resetExtension = function()
 {
     this.setRemainingSeconds(this.getMaxAllowedSecondsPerDay());
     this.setNumberOfVisitsToday(0);
+    this.setNumberOfOpenTabs(0);
 };

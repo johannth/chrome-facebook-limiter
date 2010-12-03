@@ -118,17 +118,17 @@ fl_ContentScript.prototype.onResponse = function(response)
 fl_ContentScript.prototype.startTimer = function()
 {
     var instance = this;
-    
     this.timer = setInterval (function()
     {
         instance.port.postMessage({method: "update"});
     }, 1000);
 };
 
+var injectedScript = new fl_ContentScript();
+injectedScript.notifyOpenTab();
+
 $(function()
 {
-    var injectedScript = new fl_ContentScript();
     injectedScript.addTimerToBody();
-    injectedScript.notifyOpenTab();
     injectedScript.startTimer();
 });

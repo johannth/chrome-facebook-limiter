@@ -52,7 +52,7 @@ fl_Background.prototype.addExtensionsListener = function()
         
         port.onDisconnect.addListener(function(msg)
         {
-            database.setNumberOfOpenTabs(database.getNumberOfOpenTabs() -1);
+            database.setNumberOfOpenTabs(database.getNumberOfOpenTabs() - 1);
         });
     });
 };
