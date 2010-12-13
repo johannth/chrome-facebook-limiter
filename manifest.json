@@ -1,14 +1,17 @@
 {
-  "name": "Facebook limiter",
-  "version": "1.5.5",
-  "description": "Spend a healthy amount of time on Facebook every day",
+  "name": "The Helpful Facebook Limiter",
+  "version": "1.6.4",
+  "description": "Helps you spend a healthy amount of time on Facebook every day.",
   "options_page": "options.html",
   "background_page": "background.html",
+  "icons": { "16": "FacebookLimiterLogo16.png",
+           "48": "FacebookLimiterLogo48.png",
+          "128": "FacebookLimiterLogo128.png" },
   "content_scripts": [
     {
       "matches": ["http://www.facebook.com/*"],
       "css": ["facebook-limiter.css"],
-      "js": ["jquery-1.4.4.min.js", "fl_content_script.js"],
+      "js": ["jquery-1.4.4.min.js", "cookies.js", "fl_content_script.js"],
       "run_at": "document_end"
     }
   ]

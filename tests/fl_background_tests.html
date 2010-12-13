@@ -61,7 +61,8 @@
         });
         
         test("Test that remainingSeconds is decremented if number of tabs is greater than zero", function() {
-            var database = new fl_Database();        
+            var database = new fl_Database(); 
+            database.setUserID(2);
             database.setNumberOfOpenTabs(2);
             database.setRemainingSeconds(100);
             var backgroundWorker = new fl_Background(database);
@@ -121,6 +122,30 @@
             mockPort.postMessage = function(msg) {};
             
             backgroundWorker.onRequest(request, mockPort);
+            equal(database.getRemainingSeconds(), 100);
+            equal(database.getNumberOfVisitsToday(), 2);
+            equal(database.getNumberOfOpenTabs(), 1);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that numberOfVisits is incremented on second visit", function()
+        {
+            var database = new fl_Database(); 
+            database.setUserID("2");
+            database.setLastVisit(new Date());
+            database.setNumberOfVisitsToday(1);
+            database.setNumberOfOpenTabs(0);
+            database.setRemainingSeconds(100);     
+            
+            database = new fl_Database();
+            var backgroundWorker = new fl_Background(database);
+            
+            var message = function() {};
+            message.method = "postUserID";
+            message.userID = "2";
+            
+            backgroundWorker.onRequest(message, null);
             equal(database.getRemainingSeconds(), 100);
             equal(database.getNumberOfVisitsToday(), 2);
             equal(database.getNumberOfOpenTabs(), 1);

@@ -2,6 +2,7 @@ var fl_ContentScript = function()
 {
     var instance = this;
     this.port = chrome.extension.connect();
+    this.port.postMessage({"method": "postUserID", "userID": cookies.readCookie("c_user") });
     this.port.onMessage.addListener(function(msg)
     {
         instance.onResponse(msg);
@@ -9,21 +10,56 @@ var fl_ContentScript = function()
     this.timer = null;
 };
 
+fl_ContentScript.prototype.getRandomAdvice = function()
+{
+    var ADVICES = ["water your plants",
+    "make a pros and cons list of having a pet elephant",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>',
+    "make sure all the clocks in your house are on time",
+    "draw a picture of a narwhal and send your childhood friend",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>',
+    "proof that the sum of angles in a triangle is 180°",
+    "think about who you're going to give a gift next and what it should be",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>',
+    "change your ringtone to something more annoying",
+    "close your eyes and imagine your in a space shuttle floating weightlessly overlooking Earth (if you aren't already)",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>',
+    "find out something new about Kazakhstan",
+    "find out how many times your country or state could fit inside of Russia",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>',
+    "make some cake",
+    "try a mountaneering class",
+    "write a poem where every word starts with s",
+    'listen to <a href="http://www.wilsonmuuga.com">Wilson Muuga</a>'];
+    
+    var indexI = Math.floor(Math.random() * ADVICES.length);
+    
+    return ADVICES[indexI];
+};
+
 fl_ContentScript.prototype.noMoreFacebookToday = function()
 {
+    var randomAdvice = this.getRandomAdvice();
     $("body").addClass("fl");
     $("body").html(
     '<div class="fl_heading">' +
-    '<div class="fl_container">' +
-    '<h1>Tími til að gera eitthvað uppbyggilegra!</h1>' + 
-    '</div>' +
+        '<div class="fl_container">' +
+            '<h1>Woo hoo! Time to do something productive!</h1>' + 
+        '</div>' +
     '</div>' + 
     '<div class="fl_container">' + 
-    '<div class="fl_box">' + 
-    '<p>Til dæmis gætirðu hlustað á <a href="http://www.wilsonmuuga.bandcamp.com">Wilson Muuga</a> eða lært að meta þá á Facebook</p>' + 
-    '<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FWilson-Muuga%2F496562675430&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>' +
-    '<p>eða meistarana í Skandilán</p>' +
-    '<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FSkandilan%2F6186313923&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>' + 
+        '<div class="fl_box">' + 
+            '<div class="suggestion">' + 
+                '<span>You could...</span>' +
+                '<h2>...' + randomAdvice + '</h2>' + 
+            '</div>' +
+                    
+            '<p>Or you could like Wilson Muuga on Facebook</p>' +
+            '<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FWilson-Muuga%2F496562675430&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>' +
+            '<p>Or you could like Pönkbandið Fjölnir on Facebook</p>' +
+            '<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FPonkbandid-Fjolnir%2F105111452906&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>' + 
+            '<p>Or you can like Skandilán on Facebook</p>' +
+            '<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FSkandilan%2F6186313923&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>' + 
     '</div>' + 
     '<div class="fl_copyright">Jóhann Þ. Bergþórsson 2010</div>' +
     '</div>');
@@ -80,7 +116,17 @@ fl_ContentScript.prototype.disableNumberOfVisits = function()
 
 fl_ContentScript.prototype.addTimerToBody = function()
 {
-    $("body").prepend("<div id=\"limiter\"><div class=\"fl_container\"><div id=\"countdown-timer\">Loading timer...</div><div id=\"number-of-visits\">Loading number of visits...</div></div></div>");
+    if($("#limiter").size() === 0)
+    {
+        $("body").prepend("<div id=\"limiter\">"+
+                            "<div class=\"fl_container\">" +
+                                "<div class=\"timers\">" +
+                                    "<div id=\"countdown-timer\">Loading timer...</div>" + 
+                                    "<div id=\"number-of-visits\">Loading number of visits...</div>" + 
+                                "</div>" +
+                            "</div>" +
+                            "</div>");
+    }
 };
 
 fl_ContentScript.prototype.notifyOpenTab = function()
@@ -125,10 +171,13 @@ fl_ContentScript.prototype.startTimer = function()
 };
 
 var injectedScript = new fl_ContentScript();
-injectedScript.notifyOpenTab();
 
 $(function()
 {
-    injectedScript.addTimerToBody();
-    injectedScript.startTimer();
+    if(cookies.readCookie("c_user") !== null)
+    {   
+        //injectedScript.addTimerToBody();
+        //injectedScript.startTimer();
+        injectedScript.noMoreFacebookToday();
+    }
 });

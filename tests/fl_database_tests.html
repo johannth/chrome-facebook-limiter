@@ -77,7 +77,6 @@
             clearLocalStorage();
         });
         
-        
         test("Test setNumberOfVisitsToday", function() {
             var database = new fl_Database();
             
@@ -87,8 +86,68 @@
             clearLocalStorage();
         });
         
+        test("Test change users changes numberOfOpenTabs", function() {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            
+            equal(database.getNumberOfOpenTabs(), 2);
+            
+            database.setUserID(4);
+            equal(database.getNumberOfOpenTabs(), 0);
+            
+            clearLocalStorage();
+        });
         
+        test("Test that changing users back and forth retains settings", function() 
+        {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            equal(database.getNumberOfOpenTabs(), 2);
+            database.setUserID(4);   
+            equal(database.getNumberOfOpenTabs(), 0);
+            database.setUserID(3);
+            equal(database.getNumberOfOpenTabs(), 2);
+            
+            clearLocalStorage();
+        });
         
+        test("Test that settings retain between instances", function() 
+        {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            equal(database.getNumberOfOpenTabs(), 2);
+           
+            var database2 = new fl_Database();
+            database2.setUserID(3);
+            equal(database2.getNumberOfOpenTabs(), 2);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test that database setNumberOfOpenTabs to zero for all users", function()
+        {
+            var database = new fl_Database();
+            database.setUserID("3");
+            database.setNumberOfOpenTabs(2);
+            
+            database.setUserID("4");
+            database.setNumberOfOpenTabs(3);
+            
+            database.setNumberOfTabsToZeroForAllUsers();
+            
+            //database = new fl_Database();
+            database.setUserID("3");
+            equal(database.getNumberOfOpenTabs(), 0, "UserID 3");
+            
+           //database = new fl_Database();
+            database.setUserID("4");
+            equal(database.getNumberOfOpenTabs(), 0, "UserID 4");
+            
+            clearLocalStorage();
+        });
     });
     </script>
     

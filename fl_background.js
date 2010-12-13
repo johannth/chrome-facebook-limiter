@@ -6,7 +6,7 @@ var fl_Background = function(database)
 
 fl_Background.prototype.onTimerTick = function()
 {
-    if(this.database.getNumberOfOpenTabs() > 0)
+    if(this.database.hasUser() && this.database.getNumberOfOpenTabs() > 0)
     {
         this.database.setRemainingSeconds(this.database.getRemainingSeconds() - this.CHECK_INTERVAL);
     }
@@ -36,12 +36,21 @@ fl_Background.prototype.onRequest = function(msg, port)
     {
         this.tabWasClosed();
     }
+    else if (msg.method === "postUserID")
+    {
+        this.database.setUserID(msg.userID);
+        
+        if(this.database.isFirstVisitOfTheDay(new Date()))
+        {
+            this.database.resetExtension();
+        }
+        this.markVisit();
+    }
 };
 
 fl_Background.prototype.addExtensionsListener = function()
 {
-    var instance = this,
-    database = this.database;
+    var instance = this;
     
     chrome.extension.onConnect.addListener(function(port)
     {
@@ -52,7 +61,7 @@ fl_Background.prototype.addExtensionsListener = function()
         
         port.onDisconnect.addListener(function(msg)
         {
-            database.setNumberOfOpenTabs(database.getNumberOfOpenTabs() - 1);
+            instance.tabWasClosed();
         });
     });
 };
@@ -60,9 +69,8 @@ fl_Background.prototype.addExtensionsListener = function()
 fl_Background.prototype.startTimer = function()
 {
     var instance = this;
-    
-    setInterval (function() { instance.onTimerTick() }, instance.CHECK_INTERVAL * 1000);
-}
+    setInterval (function() { instance.onTimerTick() }, this.CHECK_INTERVAL * 1000);
+};
 
 fl_Background.prototype.markVisit = function()
 {

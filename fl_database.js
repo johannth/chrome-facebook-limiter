@@ -1,48 +1,80 @@
 var fl_Database = function()
+{   
+    this.userID = "-1";
+    this.userStorage = {};
+    this.initUserStorageIfNecessary();
+};
+
+fl_Database.prototype.initUserStorageIfNecessary = function()
 {
-    if(localStorage["numberOfOpenTabs"] === undefined)
+    if(this.userStorage["numberOfOpenTabs"] === undefined)
     {
         this.initNumberOfOpenTabs();
     }
     
-    if(localStorage["numberOfVisitsToday"] === undefined)
+    if(this.userStorage["numberOfVisitsToday"] === undefined)
     {
         this.initNumberOfVisitsToday();
     }
     
-    if(localStorage["maxAllowedVisitsPerDay"] === undefined)
+    if(this.userStorage["maxAllowedVisitsPerDay"] === undefined)
     {
         this.initMaxAllowedVisitsPerDay();
     }
     
-    if(localStorage["maxAllowedSecondsPerDay"] === undefined)
+    if(this.userStorage["maxAllowedSecondsPerDay"] === undefined)
     {
         this.initMaxAllowedSecondsPerDay();
     }
     
-    if(localStorage["limitTime"] === undefined)
+    if(this.userStorage["limitTime"] === undefined)
     {
         this.setShouldLimitTime(true);
     }
     
-    if(localStorage["limitVisits"] === undefined)
+    if(this.userStorage["limitVisits"] === undefined)
     {
         this.setShouldLimitVisits(true);
-    } 
-    
-    this.urls = [];
+    }
+};
+
+fl_Database.prototype.hasUser = function()
+{
+    return this.userID !== "";
+};
+
+fl_Database.prototype.setUserID = function(userID)
+{
+    if(userID !== this.userID)
+    {
+        this.saveUserStorage();
+        this.userID = userID;
+        this.userStorage = JSON.parse(localStorage.getItem(userID));
+        if(this.userStorage === null)
+        {
+            this.userStorage = {};
+        }
+        this.initUserStorageIfNecessary();
+        this.saveUserStorage();
+    }
+};
+
+fl_Database.prototype.saveUserStorage = function()
+{
+    localStorage.setItem(this.userID, JSON.stringify(this.userStorage));
 };
 
 fl_Database.prototype.getNumberOfOpenTabs = function()
 {
-    return parseInt(localStorage["numberOfOpenTabs"], 10);
+    return this.userStorage["numberOfOpenTabs"];
 };
 
 fl_Database.prototype.setNumberOfOpenTabs = function(numberOfOpenTabs)
 {
     if(numberOfOpenTabs >= 0)
     {
-        localStorage["numberOfOpenTabs"] = numberOfOpenTabs;
+        this.userStorage["numberOfOpenTabs"] = numberOfOpenTabs;
+        this.saveUserStorage();
     }
 };
 
@@ -58,12 +90,13 @@ fl_Database.prototype.initNumberOfVisitsToday = function()
 
 fl_Database.prototype.getNumberOfVisitsToday = function()
 {
-    return parseInt(localStorage["numberOfVisitsToday"], 10);
+    return this.userStorage["numberOfVisitsToday"];
 };
 
 fl_Database.prototype.setNumberOfVisitsToday = function(numberOfVisitsToday)
 {
-    localStorage["numberOfVisitsToday"] = numberOfVisitsToday;
+    this.userStorage["numberOfVisitsToday"] = numberOfVisitsToday;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.initMaxAllowedVisitsPerDay = function()
@@ -73,12 +106,13 @@ fl_Database.prototype.initMaxAllowedVisitsPerDay = function()
 
 fl_Database.prototype.getMaxAllowedVisitsPerDay = function()
 {
-    return parseInt(localStorage["maxAllowedVisitsPerDay"], 10);
+    return this.userStorage["maxAllowedVisitsPerDay"];
 };
 
 fl_Database.prototype.setMaxAllowedVisitsPerDay = function(visitsPerDay)
 {
-    localStorage["maxAllowedVisitsPerDay"] = visitsPerDay;
+    this.userStorage["maxAllowedVisitsPerDay"] = visitsPerDay;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.initMaxAllowedSecondsPerDay = function()
@@ -88,56 +122,77 @@ fl_Database.prototype.initMaxAllowedSecondsPerDay = function()
 
 fl_Database.prototype.getMaxAllowedSecondsPerDay = function()
 {
-    return parseInt(localStorage["maxAllowedSecondsPerDay"], 10);
+    return this.userStorage["maxAllowedSecondsPerDay"];
 };
 
 fl_Database.prototype.setMaxAllowedSecondsPerDay = function(secondsPerDay)
 {
-    localStorage["maxAllowedSecondsPerDay"] = secondsPerDay;
+    this.userStorage["maxAllowedSecondsPerDay"] = secondsPerDay;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.getRemainingSeconds = function()
 {    
-    return parseInt(localStorage["secondsRemaining"], 10);
+    return this.userStorage["secondsRemaining"];
 };
 
 fl_Database.prototype.setRemainingSeconds = function(seconds)
 {
-    localStorage["secondsRemaining"] = seconds;
+    this.userStorage["secondsRemaining"] = seconds;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.setShouldLimitVisits = function(shouldLimitVisits)
 {
-    localStorage["limitVisits"] = shouldLimitVisits;
+    this.userStorage["limitVisits"] = shouldLimitVisits;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.shouldLimitVisits = function()
 {
-    return localStorage["limitVisits"] === "true";
+    return this.userStorage["limitVisits"] === true;
 };
 
 fl_Database.prototype.setShouldLimitTime = function(shouldLimitTime)
 {
-    localStorage["limitTime"] = shouldLimitTime;
+    this.userStorage["limitTime"] = shouldLimitTime;
+    this.saveUserStorage();
 };
 
 fl_Database.prototype.shouldLimitTime = function()
 {
-    return localStorage["limitTime"] === "true";
+    return this.userStorage["limitTime"] === true;
 };
 
 fl_Database.prototype.isFirstVisitOfTheDay = function(currentDay)
 {
-    return localStorage["yearOfLastVisit"] !== "" + currentDay.getFullYear() ||
-        localStorage["monthOfLastVisit"] !== "" + currentDay.getMonth() ||
-        localStorage["dateOfLastVisit"] !== "" + currentDay.getDate();
+    return this.userStorage["yearOfLastVisit"] !== currentDay.getFullYear() ||
+        this.userStorage["monthOfLastVisit"] !== currentDay.getMonth() ||
+        this.userStorage["dateOfLastVisit"] !== currentDay.getDate();
 };
 
 fl_Database.prototype.setLastVisit = function(dateOfLastVisit)
 {
-    localStorage["yearOfLastVisit"] = dateOfLastVisit.getFullYear();
-    localStorage["monthOfLastVisit"] = dateOfLastVisit.getMonth();
-    localStorage["dateOfLastVisit"] = dateOfLastVisit.getDate();
+    this.userStorage["yearOfLastVisit"] = dateOfLastVisit.getFullYear();
+    this.userStorage["monthOfLastVisit"] = dateOfLastVisit.getMonth();
+    this.userStorage["dateOfLastVisit"] = dateOfLastVisit.getDate();
+    this.saveUserStorage();
+};
+
+fl_Database.prototype.setNumberOfTabsToZeroForAllUsers = function()
+{
+    for(var i = 0; i != localStorage.length; i++)
+    {
+        var userID = localStorage.key(i);
+        var userStorage = JSON.parse(localStorage.getItem(userID));
+        userStorage["numberOfOpenTabs"] = 0;
+        localStorage.setItem(userID, JSON.stringify(userStorage));
+        
+        if(this.userID === userID)
+        {
+            this.userStorage = userStorage;
+        }
+    }
 };
 
 fl_Database.prototype.resetExtension = function()
